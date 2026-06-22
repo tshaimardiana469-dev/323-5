@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GldeMall | Premium Financial Information Consultancy</title>
+    <style>
+        /* Global Color Variables */
+        :root {
+            --primary-bg: #FAF8F3;
+            --gold-brown: #AD7C4B;
+            --deep-navy: #293C7C;
+            --emerald-dark: #024944;
+            --burgundy: #812B4A;
+            --white: #ffffff;
+            --dark-text: #1a1a1a;
+            --shadow-lux: 0 8px 30px rgba(41, 60, 124, 0.12);
+            --border-lux: 1px solid rgba(173, 124, 75, 0.2);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Georgia, serif;
+        }
+        body {
+            background-color: var(--primary-bg);
+            color: var(--dark-text);
+            overflow-x: hidden;
+        }
+        img {
+            max-width: 100%;
+            display: block;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        ul {
+            list-style: none;
+        }
+        button, input, textarea {
+            font-family: inherit;
+        }
+
+        /* Floating Side Ads - Draggable & Closable */
+        .side-ad {
+            position: fixed;
+            width: 160px;
+            height: 420px;
+            background: linear-gradient(160deg, var(--deep-navy), var(--burgundy));
+            border-radius: 12px;
+            box-shadow: var(--shadow-lux);
+            z-index: 999;
+            padding: 12px;
+            color: white;
+            cursor: grab;
+        }
+        .side-ad:active {
+            cursor: grabbing;
+        }
+        .ad-left {
+            left: 10px;
+            top: 20%;
+        }
+        .ad-right {
+            right: 10px;
+            top: 20%;
+        }
+        .ad-close {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.3);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .ad-content h4 {
+            color: var(--gold-brown);
+            margin: 24px 0 12px;
+            font-size: 15px;
+        }
+        .ad-content p {
+            font-size: 12px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        @media (max-width: 1024px) {
+            .side-ad {
+                width: 120px;
+                height: 320px;
+            }
+        }
+        @media (max-width: 768px) {
+            .side-ad {
+                display: none;
+            }
+        }
+
+        /* Header & Navigation */
+        header {
+            background: var(--white);
+            border-bottom: var(--border-lux);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo h1 {
+            font-size: 28px;
+            color: var(--deep-navy);
+            letter-spacing: 1px;
+        }
+        .logo span {
+            color: var(--gold-brown);
+        }
+        nav ul {
+            display: flex;
+            gap: 36px;
+        }
+        nav a {
+            font-size: 16px;
+            font-weight: 500;
+            padding: 8px 0;
+            position: relative;
+            color: var(--deep-navy);
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gold-brown);
+            transition: width 0.3s ease;
+        }
+        nav a:hover::after, nav a.active::after {
+            width: 100%;
+        }
+        nav a.active {
+            color: var(--gold-brown);
+        }
+        .mobile-menu-btn {
+            display: none;
+            border: none;
+            background: transparent;
+            font-size: 28px;
+            color: var(--deep-navy);
+        }
+        @media (max-width: 992px) {
+            nav ul {
+                position: fixed;
+                top: 82px;
+                left: 0;
+                width: 100%;
+                height: calc(100vh - 82px);
+                background: var(--primary-bg);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 40px;
+                transform: translateX(-100%);
+                transition: transform 0.4s ease;
+                z-index: 98;
+            }
+            nav ul.open {
+                transform: translateX(0);
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* Page Container - All Subpages Hidden By Default */
+        .page-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            display: none;
+            min-height: calc(100vh - 180px);
+        }
+        .page-section.active {
+            display: block;
+        }
+        .section-title {
+            font-size: 42px;
+            color: var(--deep-navy);
+            margin-bottom: 16px;
+            border-left: 5px solid var(--gold-brown);
+            padding-left: 16px;
+        }
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--burgundy);
+            margin-bottom: 48px;
+            opacity: 0.85;
+        }
+
+        /* Hero Banner - Homepage Image Block */
+        .hero-banner {
+            width: 100%;
+            height: 520px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lux);
+            margin-bottom: 60px;
+            position: relative;
+        }
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(41, 60, 124, 0.7), transparent 60%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px;
+            color: white;
+        }
+        .hero-overlay h2 {
+            font-size: 44px;
+            margin-bottom: 12px;
+        }
+        .hero-overlay p {
+            font-size: 18px;
+            max-width: 700px;
+            line-height: 1.7;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin: 60px 0;
+        }
+        .grid-card {
+            border-radius: 12px;
+            overflow: hidden;
+            border: var(--border-lux);
+            box-shadow: var(--shadow-lux);
+        }
+        @media (max-width: 992px) {
+            .image-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .hero-banner {
+                height: 380px;
+            }
+            .hero-overlay h2 {
+                font-size: 32px;
+            }
+        }
+        @media (max-width: 640px) {
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-banner {
+                height: 300px;
+            }
+        }
+
+        /* Service Cards */
+        .services-wrap {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 60px 0;
+        }
+        .service-card {
+            background: var(--white);
+            padding: 36px;
+            border-radius: 14px;
+            border: var(--border-lux);
+            box-shadow: var(--shadow-lux);
+            transition: transform 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-8px);
+        }
+        .service-card h3 {
+            color: var(--emerald-dark);
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+        .service-card p {
+            line-height: 1.7;
+            color: #333;
+        }
+        @media (max-width: 992px) {
+            .services-wrap {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 640px) {
+            .services-wrap {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* About Us Page Styling */
+        .about-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+            margin: 60px 0;
+        }
+        .about-text h3 {
+            color: var(--burgundy);
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+        .about-text p {
+            line-height: 1.8;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+        .color-tag {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 30px;
+            margin: 6px 4px;
+            color: white;
+            font-size: 14px;
+        }
+        .tag-navy { background: var(--deep-navy); }
+        .tag-gold { background: var(--gold-brown); }
+        .tag-emerald { background: var(--emerald-dark); }
+        .tag-burgundy { background: var(--burgundy); }
+        @media (max-width: 860px) {
+            .about-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Contact Page & Form */
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+        .contact-info h3 {
+            color: var(--deep-navy);
+            font-size: 26px;
+            margin-bottom: 30px;
+        }
+        .contact-block {
+            margin-bottom: 28px;
+        }
+        .contact-block h4 {
+            color: var(--gold-brown);
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .contact-block p {
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        .contact-form {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: var(--shadow-lux);
+            border: var(--border-lux);
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--deep-navy);
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: var(--primary-bg);
+            font-size: 15px;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--gold-brown);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, var(--deep-navy), var(--emerald-dark));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+        .success-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .success-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .modal-box {
+            background: var(--white);
+            padding: 48px;
+            border-radius: 14px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: var(--shadow-lux);
+        }
+        .modal-box h3 {
+            color: var(--emerald-dark);
+            font-size: 26px;
+            margin-bottom: 16px;
+        }
+        .modal-box p {
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .modal-close {
+            padding: 12px 32px;
+            background: var(--gold-brown);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        @media (max-width: 860px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--deep-navy);
+            color: rgba(255,255,255,0.85);
+            padding: 50px 24px 30px;
+        }
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 36px;
+            margin-bottom: 40px;
+        }
+        .footer-col h4 {
+            color: var(--gold-brown);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .footer-col li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            font-size: 14px;
+        }
+        /* Remove pagination - no pagination code added anywhere */
+        @media (max-width: 992px) {
+            .footer-inner {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 640px) {
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Draggable Left Side Ad -->
+    <div class="side-ad ad-left" id="adLeft">
+        <button class="ad-close" onclick="closeAd('adLeft')">×</button>
+        <div class="ad-content">
+            <h4>Premium Financial Analysis</h4>
+            <p>Global market data & personalized wealth consultation services from UK certified consultants.</p>
+            <h4>Limited Consult Discount</h4>
+            <p>Book your one-to-one financial strategy session today and unlock exclusive industry reports.</p>
+        </div>
+    </div>
+
+    <!-- Draggable Right Side Ad -->
+    <div class="side-ad ad-right" id="adRight">
+        <button class="ad-close" onclick="closeAd('adRight')">×</button>
+        <div class="ad-content">
+            <h4>Market Intelligence Reports</h4>
+            <p>Daily global capital market updates, risk assessment & asset allocation planning.</p>
+            <h4>Corporate Finance Support</h4>
+            <p>Tailored advisory for SMEs & institutional investment portfolios based in Cambridge UK.</p>
+        </div>
+    </div>
+
+    <!-- Success Submit Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="modal-box">
+            <h3>Submission Successful!</h3>
+            <p>Thank you for your inquiry. Our financial consultant will contact you via email or phone within 24 working hours.</p>
+            <button class="modal-close" onclick="closeModal()">Confirm</button>
+        </div>
+    </div>
+
+    <!-- Site Header & Navigation -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <h1>Glde<span>Mall</span></h1>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="about">About Us</a></li>
+                    <li><a href="#" class="nav-link" data-page="services">Our Services</a></li>
+                    <li><a href="#" class="nav-link" data-page="contact">Contact Us</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Homepage Section -->
+    <section class="page-section active" id="home">
+        <h2 class="section-title">Global Financial Information Consultancy</h2>
+        <p class="section-subtitle">Cambridge-based professional financial intelligence & asset strategy advisory firm</p>
+
+        <!-- Main Hero Banner Image -->
+        <div class="hero-banner">
+            <img src="https://tshaimardiana469-dev.github.io/323-5/10.jpg" alt="GldeMall Financial Consultancy Hero">
+            <div class="hero-overlay">
+                <h2>Data-Driven Financial Consulting for Global Investors</h2>
+                <p>GldeMall delivers high-precision market analysis, risk evaluation, and customized wealth management plans for individual and institutional clients across Europe.</p>
+            </div>
+        </div>
+
+        <!-- Secondary Image Grid -->
+        <div class="image-grid">
+            <div class="grid-card">
+                <img src="https://tshaimardiana469-dev.github.io/323-5/11.jpg" alt="Financial Market Research">
+            </div>
+            <div class="grid-card">
+                <img src="https://tshaimardiana469-dev.github.io/323-5/12.jpg" alt="Corporate Consultation">
+            </div>
+            <div class="grid-card">
+                <img src="https://tshaimardiana469-dev.github.io/323-5/13.jpg" alt="Wealth Strategy Planning">
+            </div>
+        </div>
+
+        <h3 style="font-size:30px; color:var(--deep-navy); margin:40px 0 20px;">Why Choose GldeMall?</h3>
+        <div class="services-wrap">
+            <div class="service-card">
+                <h3>UK Local Expert Team</h3>
+                <p>Our core consultants are based in Cambridge, with decades of experience covering European capital markets, regulatory compliance and cross-border asset allocation.</p>
+            </div>
+            <div class="service-card">
+                <h3>Real-Time Market Intelligence</h3>
+                <p>We provide real-time global financial data, industry trend reports and macroeconomic forecasting to support your investment decision-making process.</p>
+            </div>
+            <div class="service-card">
+                <h3>Customized Advisory Solutions</h3>
+                <p>From private wealth management to corporate financial restructuring, we build fully personalized consulting packages matching your risk tolerance and financial targets.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section class="page-section" id="about">
+        <h2 class="section-title">About GldeMall</h2>
+        <p class="section-subtitle">Established in Cambridge, United Kingdom, dedicated to premium financial information consultation</p>
+
+        <div class="about-row">
+            <div class="about-text">
+                <h3>Our Corporate Vision & Value</h3>
+                <p>GldeMall is a top-tier financial information consulting firm headquartered at East Road, Cambridge England. We focus on transparent, data-backed financial advisory services for retail investors, enterprise clients and institutional partners throughout the UK and Europe.</p>
+                <p>We integrate multi-dimensional market data, economic policy research and risk control modeling to deliver actionable financial insights, abandoning one-size-fits-all generic analysis templates.</p>
+                <p>Our brand visual system adopts luxury gemstone color palette representing our rigorous, stable and high-end service positioning:</p>
+                <span class="color-tag tag-navy">Deep Navy #293C7C</span>
+                <span class="color-tag tag-gold">Gold Brown #AD7C4B</span>
+                <span class="color-tag tag-emerald">Dark Emerald #024944</span>
+                <span class="color-tag tag-burgundy">Burgundy #812B4A</span>
+            </div>
+            <div class="grid-card">
+                <img src="https://tshaimardiana469-dev.github.io/323-5/14.jpg" alt="GldeMall Cambridge Office">
+            </div>
+        </div>
+
+        <div style="margin-top:60px;">
+            <h3 style="font-size:26px; color:var(--burgundy); margin-bottom:20px;">Our Core Advantages</h3>
+            <ul style="line-height:2; font-size:16px;">
+                <li>• Local Cambridge service center with full-time senior financial analysts</li>
+                <li>• Authorized access to cross-border European financial database resources</li>
+                <li>• Independent third-party risk assessment without capital transaction bias</li>
+                <li>• Confidential one-on-one financial consultation with encrypted data storage</li>
+                <li>• Multilingual support covering English, Chinese and major European languages</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Our Services Section -->
+    <section class="page-section" id="services">
+        <h2 class="section-title">Our Professional Financial Consultancy Services</h2>
+        <p class="section-subtitle">Comprehensive financial information analysis & strategic advisory service system</p>
+
+        <div class="services-wrap">
+            <div class="service-card">
+                <h3>Global Market Data Analysis</h3>
+                <p>Daily, weekly and monthly financial market reports covering stock, foreign exchange, commodities and bond markets, including macroeconomic indicator interpretation and trend prediction.</p>
+            </div>
+            <div class="service-card">
+                <h3>Personal Wealth Management Consulting</h3>
+                <p>Asset portfolio optimization, risk diversification planning, tax efficiency consultation and long-term wealth appreciation strategies for high-net-worth individuals.</p>
+            </div>
+            <div class="service-card">
+                <h3>Corporate Financial Advisory</h3>
+                <p>Enterprise capital structure adjustment, investment project feasibility research, cross-border financing consulting and financial compliance risk review for SMEs and medium institutions.</p>
+            </div>
+            <div class="service-card">
+                <h3>Risk Control & Investment Evaluation</h3>
+                <p>Independent risk rating for investment targets, asset loss early warning system construction and historical yield backtesting analysis service.</p>
+            </div>
+            <div class="service-card">
+                <h3>Industry Sector Intelligence Reports</h3>
+                <p>Vertical industry financial research, competitive enterprise financial data comparison and industrial cycle investment opportunity screening.</p>
+            </div>
+            <div class="service-card">
+                <h3>One-on-One Private Consultant Session</h3>
+                <p>Exclusive scheduled consultation with senior financial analysts, customized solution drafting and follow-up market dynamic tracking service.</p>
+            </div>
+        </div>
+
+        <div class="image-grid" style="margin-top:60px;">
+            <div class="grid-card">
+                <img src="https://tshaimardiana469-dev.github.io/323-5/15.jpg" alt="Financial Data Analysis Work">
+            </div>
+            <div class="grid-card">
+                <img src="https://tshaimardiana469-dev.github.io/323-5/16.jpg" alt="Private Consultation Meeting">
+            </div>
+            <div class="grid-card">
+                <img src="https://tshaimardiana469-dev.github.io/323-5/17.jpg" alt="Corporate Financial Research">
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Us Section -->
+    <section class="page-section" id="contact">
+        <h2 class="section-title">Contact GldeMall</h2>
+        <p class="section-subtitle">Submit your inquiry form or reach us via phone & office address directly</p>
+
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Our Contact Information</h3>
+                <div class="contact-block">
+                    <h4>Office Address</h4>
+                    <p>93 East Rd, Cambridge, England, United Kingdom</p>
+                </div>
+                <div class="contact-block">
+                    <h4>Phone Number</h4>
+                    <p>+44 7622204207</p>
+                </div>
+                <div class="contact-block">
+                    <h4>Working Hours</h4>
+                    <p>Monday - Friday: 09:00 - 18:00 GMT<br>Saturday: 10:00 - 14:00 GMT<br>Sunday & UK Public Holidays: Closed</p>
+                </div>
+                <div class="grid-card" style="margin-top:30px;">
+                    <img src="https://tshaimardiana469-dev.github.io/323-5/18.jpg" alt="Cambridge Office Location">
+                </div>
+            </div>
+
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your contact email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Contact Phone (Optional)</label>
+                    <input type="tel" id="phone" placeholder="Your phone number">
+                </div>
+                <div class="form-group">
+                    <label for="message">Your Inquiry Content</label>
+                    <textarea id="message" rows="5" placeholder="Describe your financial consulting requirements or questions..." required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Inquiry</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Website Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-col">
+                <h4>GldeMall</h4>
+                <li>Premium UK Financial Consultancy</li>
+                <li>Cambridge Headquartered Firm</li>
+                <li>Global Market Intelligence Provider</li>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <li><a href="#" class="nav-footer-link" data-page="home">Home</a></li>
+                <li><a href="#" class="nav-footer-link" data-page="about">About Us</a></li>
+                <li><a href="#" class="nav-footer-link" data-page="services">Our Services</a></li>
+                <li><a href="#" class="nav-footer-link" data-page="contact">Contact Us</a></li>
+            </div>
+            <div class="footer-col">
+                <h4>Services</h4>
+                <li>Market Data Analysis</li>
+                <li>Wealth Management Consulting</li>
+                <li>Corporate Financial Advisory</li>
+                <li>Risk Assessment Solutions</li>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <li>93 East Rd, Cambridge UK</li>
+                <li>Tel: +44 7622204207</li>
+                <li>Working Days: Mon-Fri</li>
+            </div>
+        </div>
+        <div class="copyright">
+            © 2026 GldeMall. All Rights Reserved. Financial Information Consultancy Service Provider.
+        </div>
+    </footer>
+
+    <script>
+        // 1. Page Navigation Switch Logic
+        const navLinks = document.querySelectorAll('.nav-link, .nav-footer-link');
+        const pageSections = document.querySelectorAll('.page-section');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navMenu = document.getElementById('navMenu');
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('open');
+        });
+
+        // Switch between subpages
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPage = link.getAttribute('data-page');
+                // Remove active state from all pages & nav links
+                pageSections.forEach(page => page.classList.remove('active'));
+                document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+                // Activate target page and active nav link
+                document.getElementById(targetPage).classList.add('active');
+                document.querySelector(`.nav-link[data-page="${targetPage}"]`).classList.add('active');
+                // Close mobile menu after click
+                navMenu.classList.remove('open');
+                // Scroll page to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // 2. Floating Ad Close Function
+        function closeAd(adId) {
+            document.getElementById(adId).style.display = 'none';
+        }
+
+        // Draggable Side Ads Logic
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            element.onmousedown = dragMouseDown;
+            function dragMouseDown(e) {
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            function elementDrag(e) {
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+                element.style.right = "auto";
+            }
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+        makeDraggable(document.getElementById('adLeft'));
+        makeDraggable(document.getElementById('adRight'));
+
+        // 3. Contact Form Submit - Always show success modal
+        const contactForm = document.getElementById('contactForm');
+        const successModal = document.getElementById('successModal');
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            successModal.classList.add('show');
+            contactForm.reset();
+        });
+        function closeModal() {
+            successModal.classList.remove('show');
+        }
+    </script>
+</body>
+</html>
